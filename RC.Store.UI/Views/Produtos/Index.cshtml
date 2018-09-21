@@ -1,0 +1,71 @@
+﻿<h2>Listagem de Produtos</h2>
+<div>
+    <a href="~/Produtos/AddEdit">Novo Produto</a>
+</div>
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Tipo</th>
+            <th>Quantidade</th>
+            <th>Data do Cadastro</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var produto in Model)
+        {
+            <tr id="produto-@produto.Id">
+                <td>@produto.Nome</td>
+                <td>@produto.Preco</td>
+                <td>@produto.Tipo</td>
+                <td>@produto.Quantidade</td>
+                <td>@produto.DataCadastro</td>
+                <td>
+                    <a href="~/Produtos/AddEdit/@produto.Id">Editar</a>
+                    <button onclick="excluirProduto('@produto.Id', '@produto.Nome')">Excluir</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+
+    function excluirProduto(id, nome) {
+
+        // Diferença entre var e let: var o escopo é por função e o let é por bloco.
+        let resposta = confirm(`Deseja excluir o produto '${nome}'?`)
+
+        if (resposta) {
+            confirmarExclusao(id)
+        }
+
+        //console.log(`${nome} -> ${resposta}`)
+    }
+
+    function confirmarExclusao(id) {
+
+        let xhr = new XMLHttpRequest()
+        const url = `/Produtos/Delete/${id}`
+
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 404) {
+                alert('Produto não encontrado!');
+            }
+
+            if (this.readyState === 4 && this.status === 200) {
+                let tr = document.querySelector(`#produto-${id}`)
+                if (tr !== null) {
+                    tr.remove()
+                }
+                alert('Produto excluído com sucesso.')
+            }
+        }
+
+        xhr.open('GET', url)
+        xhr.send()
+
+    }
+</script>
